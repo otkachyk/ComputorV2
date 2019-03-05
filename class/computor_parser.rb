@@ -1,5 +1,5 @@
 class ComputorParser
-  attr_reader :left_part, :right_part
+  attr_accessor :left_part, :right_part
 
   def initialize(whole_string)
     @whole_string = whole_string
@@ -17,6 +17,17 @@ class ComputorParser
     @right_part = @whole_string.match(/(?<==).+/)[0].gsub(/\s+/, '')
   end
 
+  def simplify_right_part
+    if @right_part !~ /[a-zA-Z]/
+      if @right_part.include?('^')
+        @right_part.sub!('^', '**')
+      end
+      if @right_part =~ /\+|-|\*|\/|\**|\(|\)/
+        @right_part = eval @right_part
+      end
+    end
+  end
+
   def valid?
       @error = ("Should be one `=` sign") if @whole_string.scan(/=/).count != 1
       @error = ("Left part should contain only word characters") if !@left_part.scan(/\d+/).empty?
@@ -29,6 +40,5 @@ class ComputorParser
   end
 
   private
-
 
 end
